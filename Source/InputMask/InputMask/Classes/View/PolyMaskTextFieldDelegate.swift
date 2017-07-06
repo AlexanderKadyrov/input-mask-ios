@@ -22,6 +22,10 @@ open class PolyMaskTextFieldDelegate: MaskedTextFieldDelegate {
     
     fileprivate var _affineFormats: [String]
     
+    public var blockOnChangeText: ((_ text: String) -> Void)?
+    
+    public var isUppercaseString = false
+    
     public var affineFormats: [String] {
         get {
             return self._affineFormats
@@ -125,10 +129,14 @@ open class PolyMaskTextFieldDelegate: MaskedTextFieldDelegate {
             autocomplete: self.autocomplete
         )
         
-        field.text = result.formattedText.string
-        let position: Int =
-            result.formattedText.string.distance(from: result.formattedText.string.startIndex, to: result.formattedText.caretPosition)
+        let currentText = isUppercaseString ? result.formattedText.string.uppercased() : result.formattedText.string
+        
+        field.text = currentText
+        
+        let position: Int = result.formattedText.string.distance(from: result.formattedText.string.startIndex, to: result.formattedText.caretPosition)
         self.setCaretPosition(position, inField: field)
+        
+        blockOnChangeText?(currentText)
         
         return (result.extractedValue, result.complete)
     }
