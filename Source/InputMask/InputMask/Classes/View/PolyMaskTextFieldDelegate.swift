@@ -98,8 +98,12 @@ open class PolyMaskTextFieldDelegate: MaskedTextFieldDelegate {
             autocomplete: false
         )
         
-        field.text = result.formattedText.string
+        let currentText = isUppercaseString ? result.formattedText.string.uppercased() : result.formattedText.string
+        
+        field.text = currentText
         self.setCaretPosition(range.location, inField: field)
+        
+        blockOnChangeText?(currentText)
         
         return (result.extractedValue, result.complete)
     }
